@@ -104,51 +104,53 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Constants.appBar(),
-      body: Column(
-        children: [
-          Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
-              child: Row(
-                children: [
-                  Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
-                  Spacer(),
-                  ElevatedButton(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
+                child: Row(
+                  children: [
+                    Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                    Spacer(),
+                    ElevatedButton(
 
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.redAccent,
-                    ),
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const NewReport()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.black),
-                    ),
-                  )
-                ],
-              ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold)
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NewReport()),
+                        );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.black),
+                      ),
+                    )
+                  ],
+                ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold)
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ),
+            Column(
+              children: gameList()
             )
-          ),
-          Column(
-            children: gameList()
-          )
-        ],
+          ],
+        ),
       ),
       backgroundColor: Colors.black,
     );
