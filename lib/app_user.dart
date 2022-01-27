@@ -24,7 +24,7 @@ class AppUser {
    */
 
   static List getGames() {
-    String gamesStr = _prefsInstance?.getString('_games') ?? '[]';
+    String gamesStr = _prefsInstance?.getString('_gameHistory') ?? '[]';
     List games = json.decode(gamesStr);
     print('# of games: ${games.length}');
     return games;
@@ -35,15 +35,19 @@ class AppUser {
     List games = getGames();
     games.add(game);
     String gamesStr = json.encode(games);
-    _prefsInstance?.setString('_games', gamesStr);
+    _prefsInstance?.setString('_gameHistory', gamesStr);
   }
 
-  // static void removeGame(DateTime ts) {
-  //   List games = getGames();
-  //   List newGames = []
-  //   for (Games g: games) {
-  //     if
-  //   }
-  // }
+  static void removeGame(DateTime ts) {
+    List games = getGames();
+    List newGames = [];
+    for (Map g in games) {
+      if (!Constants.dateFormat.parse(g['startTime']).isAtSameMomentAs(ts)) {
+        newGames.add(g);
+      }
+    }
+    String gamesStr = json.encode(newGames);
+    _prefsInstance?.setString('_gameHistory', gamesStr);
+  }
 
 }

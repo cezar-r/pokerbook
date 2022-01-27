@@ -14,7 +14,7 @@ class Constants {
       );
   }
 
-  static DateFormat dateFormat = DateFormat('MMMM dd yyyy H:mm');
+  static DateFormat dateFormat = DateFormat('MM/dd/yyyy H:mm');
 
   static AppBar appBar() {
     return AppBar(

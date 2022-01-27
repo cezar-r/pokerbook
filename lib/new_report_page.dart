@@ -39,15 +39,22 @@ class NewSession {
 NewSession newSession = NewSession();
 
 class NewReport extends StatefulWidget {
-  const NewReport({Key? key}) : super(key: key);
+  // const NewReport({Key? key}) : super(key: key);
+  final String prevPage;
+  final Map game;
+  const NewReport(this.prevPage, this.game, {Key? key}) : super(key : key);
 
   @override
-  State<NewReport> createState() => _NewReport();
+  State<NewReport> createState() => _NewReport(prevPage, game);
 }
 
 
 class _NewReport extends State<NewReport> {
 
+
+  String prevPage;
+  Map game;
+  _NewReport(this.prevPage, this.game);
 
   final buyinText = TextEditingController();
   final cashedOutText = TextEditingController();
@@ -103,7 +110,7 @@ class _NewReport extends State<NewReport> {
                         brightness: Brightness.dark,
                       ),
                       child: CupertinoDatePicker(
-                        initialDateTime: _startTime ?? DateTime.now(),
+                        initialDateTime: _startTime != null ? _startTime : prevPage == 'gamePage' ? Constants.dateFormat.parse(game['startTime']) : DateTime.now(),
                         onDateTimeChanged: (val) {
                           setState(() {
                             if (start) {
@@ -128,10 +135,10 @@ class _NewReport extends State<NewReport> {
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
 
-        title: Constants.text("PokerBook", fontSize: 20),
+        // title: Constants.text("PokerBook", fontSize: 20),
         centerTitle: true,
         backgroundColor: Colors.black,
-        leading: IconButton(
+        leading: prevPage == 'home' ? IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           color: Colors.redAccent,
           onPressed: () {
@@ -140,6 +147,12 @@ class _NewReport extends State<NewReport> {
               MaterialPageRoute(builder: (context) => const MyHomePage()),
             );
           },
+        ) : Padding(
+          padding: EdgeInsets.fromLTRB(10, 20, 0, 10),
+          child: InkWell(
+            child: Constants.text("Cancel", fontSize: 15),
+            onTap: (){Navigator.pop(context);},
+          ),
         ),
       ),
       body: Padding(
@@ -154,7 +167,7 @@ class _NewReport extends State<NewReport> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _startTime != null ? Constants.dateFormat.format(_startTime!) : 'Start Time',
+                    _startTime != null ? Constants.dateFormat.format(_startTime!) : prevPage == "home" ? "Start Time" : game['startTime'],
                     style: TextStyle(
                       color: _startTime != null ? Colors.white : Colors.grey,
                       fontWeight: FontWeight.bold,
@@ -167,6 +180,32 @@ class _NewReport extends State<NewReport> {
                 ),
                 onPressed: () {
                   _showDatePicker(true);
+                  setState(() {
+
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              width: 400,
+              height: 50,
+              child: ElevatedButton(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _endTime != null ? Constants.dateFormat.format(_endTime!) : prevPage == "home" ? "End Time" : game['endTime'],
+                    style: TextStyle(
+                      color: _endTime != null ? Colors.white : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey[900]),
+                ),
+                onPressed: () {
+                  _showDatePicker(false);
                   setState(() {
 
                   });
@@ -189,7 +228,7 @@ class _NewReport extends State<NewReport> {
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(6.0)),
                 ),
-                hintText: "Buyin",
+                hintText: prevPage == 'home' ? "Buyin" : game['buyin'],
                 hintStyle: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.bold,
@@ -212,37 +251,11 @@ class _NewReport extends State<NewReport> {
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(6.0)),
                 ),
-                hintText: "Cashed Out",
+                hintText: prevPage == 'home' ? "Cashed Out" : game['cashedOut'],
                 hintStyle: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.bold,
                 )
-              ),
-            ),
-            SizedBox(
-              width: 400,
-              height: 50,
-              child: ElevatedButton(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _endTime != null ? Constants.dateFormat.format(_endTime!) : 'End Time',
-                    style: TextStyle(
-                      color: _endTime != null ? Colors.white : Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.grey[900]),
-                ),
-                onPressed: () {
-                  _showDatePicker(false);
-                  setState(() {
-
-                  });
-                },
               ),
             ),
             SizedBox(
@@ -258,14 +271,24 @@ class _NewReport extends State<NewReport> {
                   backgroundColor: MaterialStateProperty.all(Colors.redAccent),
                 ),
                 onPressed: () {
-                  print(buyinText.text);
-                  Map game = {"buyin" : buyinText.text,
-                    "cashedOut" : cashedOutText.text,
-                    "startTime" : Constants.dateFormat.format(_startTime!),
-                    "endTime" : Constants.dateFormat.format(_endTime!)};
-                  AppUser.addGame(game);
-                  setState(() {
-                  });
+                  if (buyinText.text == '' || cashedOutText.text == '' || _startTime == null || _endTime == null) {
+                    print('didnt save');
+                  } else {
+                    Map game = {"buyin": buyinText.text,
+                      "cashedOut": cashedOutText.text,
+                      "startTime": Constants.dateFormat.format(_startTime!),
+                      "endTime": Constants.dateFormat.format(_endTime!)};
+                    AppUser.addGame(game);
+                    if (prevPage == 'gamePage') {
+                      AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
+                    }
+                    setState(() {
+                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyHomePage()),
+                    );
+                  }
                 },
               ),
             ),
