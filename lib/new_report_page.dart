@@ -274,14 +274,15 @@ class _NewReport extends State<NewReport> {
                   if (buyinText.text == '' || cashedOutText.text == '' || _startTime == null || _endTime == null) {
                     print('didnt save');
                   } else {
-                    Map game = {"buyin": buyinText.text,
+                    if (prevPage == 'gamePage') {
+                      print(game['startTime']);
+                      AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
+                    }
+                    Map newGame = {"buyin": buyinText.text,
                       "cashedOut": cashedOutText.text,
                       "startTime": Constants.dateFormat.format(_startTime!),
                       "endTime": Constants.dateFormat.format(_endTime!)};
-                    AppUser.addGame(game);
-                    if (prevPage == 'gamePage') {
-                      AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
-                    }
+                    AppUser.addGame(newGame);
                     setState(() {
                     });
                     Navigator.push(
