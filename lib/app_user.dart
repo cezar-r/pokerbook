@@ -18,7 +18,7 @@ class AppUser {
   }
 
   static List getGames() {
-    String gamesStr = _prefsInstance?.getString('_gameHistory') ?? '[]';
+    String gamesStr = _prefsInstance?.getString('_previousGames5') ?? '[]';
     List games = json.decode(gamesStr);
     return games;
   }
@@ -27,7 +27,7 @@ class AppUser {
     List games = getGames();
     games.add(game);
     String gamesStr = json.encode(games);
-    _prefsInstance?.setString('_gameHistory', gamesStr);
+    _prefsInstance?.setString('_previousGames5', gamesStr);
   }
 
   static void removeGame(DateTime ts) {
@@ -39,7 +39,7 @@ class AppUser {
       }
     }
     String gamesStr = json.encode(newGames);
-    _prefsInstance?.setString('_gameHistory', gamesStr);
+    _prefsInstance?.setString('_previousGames5', gamesStr);
   }
 
 }

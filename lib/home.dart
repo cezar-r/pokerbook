@@ -35,6 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final List _games = AppUser.getGames();
   List<PriceData> _priceData = [];
 
+  _MyHomePageState(){initState();}
+
   String timeDifference(String startTime, String endTime) {
     var startTime_ = Constants.dateFormat.parse(startTime);
     var endTime_ = Constants.dateFormat.parse(endTime);

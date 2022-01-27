@@ -99,7 +99,7 @@ class _NewReport extends State<NewReport> {
                       )
                     ],
                   ),
-                  SizedBox(
+                  Container(
                     height: MediaQuery
                         .of(context)
                         .copyWith()
@@ -148,7 +148,7 @@ class _NewReport extends State<NewReport> {
             );
           },
         ) : Padding(
-          padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+          padding: EdgeInsets.fromLTRB(10, 20, 0, 10),
           child: InkWell(
             child: Constants.text("Cancel", fontSize: 15),
             onTap: (){Navigator.pop(context);},
@@ -272,6 +272,21 @@ class _NewReport extends State<NewReport> {
                 ),
                 onPressed: () {
                   if (buyinText.text == '' || cashedOutText.text == '' || _startTime == null || _endTime == null) {
+                    if (prevPage == 'gamePage') {
+                      Map newGame = {'buyin': buyinText.text != '' ? buyinText.text : game['buyin'],
+                        'cashedOut': cashedOutText.text != '' ? cashedOutText.text : game['cashedOut'],
+                        'startTime': _startTime != null ? Constants.dateFormat.format(_startTime!) : game['startTime'],
+                        'endTime': _endTime != null ? Constants.dateFormat.format(_endTime!) : game['endTime']
+                      };
+                      AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
+                      AppUser.addGame(newGame);
+                      setState(() {
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyHomePage()),
+                      );
+                    }
                   } else {
                     if (prevPage == 'gamePage') {
                       AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
