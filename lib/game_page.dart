@@ -36,7 +36,7 @@ class _GamePage extends State<GamePage> {
       return Row(
         children: [
           Constants.text(constText, color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          Spacer(),
+          const Spacer(),
           Constants.text(infoText, color: color, fontSize: 20, fontWeight: FontWeight.bold)
         ],
       );
@@ -98,10 +98,10 @@ class _GamePage extends State<GamePage> {
                           );
                         });
                       },
-                      child: Icon(Icons.edit)
+                      child: const Icon(Icons.edit)
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 SizedBox(
                   height: 50,
                   width: 100,
@@ -119,7 +119,7 @@ class _GamePage extends State<GamePage> {
                           MaterialPageRoute(builder: (context) => const MyHomePage()),
                         );
                       },
-                      child: Icon(Icons.delete_outline_rounded)
+                      child: const Icon(Icons.delete_outline_rounded)
                   ),
                 ),
               ],

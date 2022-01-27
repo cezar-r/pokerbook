@@ -84,12 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
       _games.sort((a, b) =>
           Constants.dateFormat.parse(a['startTime']).compareTo(
               Constants.dateFormat.parse(b['startTime'])));
-      int total_profit = 0;
+      int totalProfit = 0;
       for (Map m in _games) {
         int profit = int.parse(m['cashedOut']) - int.parse(m['buyin']);
         DateTime startTime = Constants.dateFormat.parse(m['startTime']);
-        priceData.add(PriceData(startTime, total_profit + profit));
-        total_profit += profit;
+        priceData.add(PriceData(startTime, totalProfit + profit));
+        totalProfit += profit;
       }
     }
     return priceData;
@@ -141,11 +141,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // appBar: Constants.appBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
+          padding: const EdgeInsets.fromLTRB(10, 50, 10, 0),
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)
@@ -155,12 +155,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   alignment: Alignment.centerLeft,
                   child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 20, fontWeight: FontWeight.bold)
                 ),
-              SizedBox(height: 5,),
+              const SizedBox(height: 5,),
               Align(
                   alignment: Alignment.centerLeft,
                   child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 15, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Align(
               //   alignment: Alignment.centerLeft,
               //   child: Constants.text("${(getWinsRatio() * 100).toStringAsFixed(2)}% win-rate", color: getWinsRatio() >= 0.5 ? Colors.greenAccent : Colors.redAccent, fontSize: 14, fontWeight: FontWeight.bold),
@@ -191,11 +191,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         yValueMapper: (PriceData price, _) => price.profit)
                   ]
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 children: [
                   Constants.text("Games", color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
-                  Spacer(),
+                  const Spacer(),
                   ElevatedButton(
                     child: Icon(
                       Icons.add,
@@ -204,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: (){
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) =>  NewReport("home", {})),
+                        MaterialPageRoute(builder: (context) =>  const NewReport("home", {})),
                       );
                     },
                     style: ButtonStyle(

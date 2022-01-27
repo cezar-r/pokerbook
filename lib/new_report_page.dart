@@ -99,7 +99,7 @@ class _NewReport extends State<NewReport> {
                       )
                     ],
                   ),
-                  Container(
+                  SizedBox(
                     height: MediaQuery
                         .of(context)
                         .copyWith()
@@ -148,7 +148,7 @@ class _NewReport extends State<NewReport> {
             );
           },
         ) : Padding(
-          padding: EdgeInsets.fromLTRB(10, 20, 0, 10),
+          padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
           child: InkWell(
             child: Constants.text("Cancel", fontSize: 15),
             onTap: (){Navigator.pop(context);},
@@ -272,10 +272,8 @@ class _NewReport extends State<NewReport> {
                 ),
                 onPressed: () {
                   if (buyinText.text == '' || cashedOutText.text == '' || _startTime == null || _endTime == null) {
-                    print('didnt save');
                   } else {
                     if (prevPage == 'gamePage') {
-                      print(game['startTime']);
                       AppUser.removeGame(Constants.dateFormat.parse(game['startTime']));
                     }
                     Map newGame = {"buyin": buyinText.text,

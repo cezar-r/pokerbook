@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Constants.dart';
@@ -19,19 +17,13 @@ class AppUser {
     return _prefsInstance;
   }
 
-  /*
-  {date: DateTime, buyin: buyin, cashedOut, cashedOut, duration, duration
-   */
-
   static List getGames() {
     String gamesStr = _prefsInstance?.getString('_gameHistory') ?? '[]';
     List games = json.decode(gamesStr);
-    print('# of games: ${games.length}');
     return games;
   }
 
   static void addGame(Map game) {
-    print('adding');
     List games = getGames();
     games.add(game);
     String gamesStr = json.encode(games);
