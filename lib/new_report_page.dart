@@ -58,14 +58,53 @@ class _NewReport extends State<NewReport> {
 
   final buyinText = TextEditingController();
   final cashedOutText = TextEditingController();
+  final locationText = TextEditingController();
   DateTime? _startTime;
   DateTime? _endTime;
+  String? _selectedGameType;
 
 
 
   @override
   Widget build(BuildContext context) {
 
+    var _gameTypes = ['NL 1/2', 'NL 1/3', 'NL 2/4', 'NL 2/5', 'NL 5/10', 'NL 10/20',
+                      'Limit 1/2', 'Limit 1/3', 'Limit 2/4', 'Limit 2/5', 'Limit 5/10', 'Limit 10/20',
+                      'PLO 1/2', 'PLO 1/3', 'PLO 2/4', 'PLO 2/5', 'PLO 5/10', 'PLO 10/20'];
+
+    void _showGameTypePicker() {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (BuildContext builder) {
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                      height: MediaQuery
+                          .of(context)
+                          .copyWith()
+                          .size
+                          .height * .25,
+                      color: Colors.black,
+                      child: CupertinoPicker(
+                        children: _gameTypes.map((x) => Constants.text(x, color: Colors.white,  fontSize: 18)).toList(),
+                        onSelectedItemChanged: (value) {
+                          _selectedGameType = _gameTypes[value];
+                          setState(() {
+
+                          });
+                        },
+                        itemExtent: 50,
+                        diameterRatio: 4,
+                        useMagnifier: true,
+                        magnification: 1.1,
+                      )
+                  ),
+                ]
+            );
+          }
+      );
+    }
 
     void _showDatePicker(bool start) {
       // showCupertinoModalPopup is a built-in function of the cupertino library
@@ -75,30 +114,6 @@ class _NewReport extends State<NewReport> {
             return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CupertinoButton(
-                        child: const Text(''),
-                        onPressed: () {},
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 5.0,
-                        ),
-                      ),
-                      CupertinoButton(
-                        child: const Text(
-                          'Confirm',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                        onPressed: () {Navigator.of(context, rootNavigator: true).pop();},
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 5.0,
-                        ),
-                      )
-                    ],
-                  ),
                   Container(
                     height: MediaQuery
                         .of(context)
@@ -129,7 +144,6 @@ class _NewReport extends State<NewReport> {
           }
       );
     }
-
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -213,6 +227,51 @@ class _NewReport extends State<NewReport> {
               ),
             ),
             TextField(
+              controller: locationText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: InputDecoration(
+                  fillColor: Colors.grey[900],
+                  filled: true,
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                  ),
+                  hintText: prevPage == 'home' ? "Location" : game['location'],
+                  hintStyle: const TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  )
+              ),
+            ),
+            SizedBox(
+              width: 400,
+              height: 50,
+              child: ElevatedButton(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _selectedGameType != null ? _selectedGameType : prevPage == 'home' ? "Game Type" : game['gameType'],
+                    style: TextStyle(
+                      color: _selectedGameType != null ? Colors.white : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey[900]),
+                ),
+                onPressed: () {
+                  _showGameTypePicker();
+                  setState(() {
+
+                  });
+                },
+              ),
+            ),
+            TextField(
               controller: buyinText,
               style: const TextStyle(
                 color: Colors.white,
@@ -275,6 +334,8 @@ class _NewReport extends State<NewReport> {
                     if (prevPage == 'gamePage') {
                       Map newGame = {'buyin': buyinText.text != '' ? buyinText.text : game['buyin'],
                         'cashedOut': cashedOutText.text != '' ? cashedOutText.text : game['cashedOut'],
+                        'location' : locationText.text != '' ? locationText.text : game['location'],
+                        'gameType' : _selectedGameType != null ? _selectedGameType : game['gameType'],
                         'startTime': _startTime != null ? Constants.dateFormat.format(_startTime!) : game['startTime'],
                         'endTime': _endTime != null ? Constants.dateFormat.format(_endTime!) : game['endTime']
                       };
@@ -293,6 +354,8 @@ class _NewReport extends State<NewReport> {
                     }
                     Map newGame = {"buyin": buyinText.text,
                       "cashedOut": cashedOutText.text,
+                      'location' : locationText.text,
+                      'gameType' : _selectedGameType,
                       "startTime": Constants.dateFormat.format(_startTime!),
                       "endTime": Constants.dateFormat.format(_endTime!)};
                     AppUser.addGame(newGame);

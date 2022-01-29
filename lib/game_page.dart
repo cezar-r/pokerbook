@@ -21,6 +21,18 @@ class _GamePage extends State<GamePage> {
   Map game;
   _GamePage(this.game);
 
+
+
+  int getTotalTime() {
+    var startTime_ = Constants.dateFormat.parse(game['startTime']);
+    var endTime_ = Constants.dateFormat.parse(game['endTime']);
+    return endTime_.difference(startTime_).inMinutes;
+  }
+
+  int getProfit() {
+    return int.parse(game['cashedOut']) - int.parse(game['buyin']);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +83,10 @@ class _GamePage extends State<GamePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            buildRow('Profit', '\$${int.parse(game['cashedOut']) - int.parse(game['buyin'])}'),
+            buildRow('Location', '${game['location']}'),
+            buildRow('Type & Stake', '${game['gameType']}'),
+            buildRow('Profit', '\$${getProfit()}'),
+            buildRow('Hourly Rate', '\$${(getProfit() / (getTotalTime() / 60)).toStringAsFixed(2)}/hour'),
             buildRow('Buyin', '\$${game['buyin']}'),
             buildRow('Cashed Out', '\$${game['cashedOut']}'),
             buildRow('Start', game['startTime']),

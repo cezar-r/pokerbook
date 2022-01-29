@@ -8,14 +8,7 @@ import 'game_page.dart';
 
 /// TODO
 /// Figure out navbar
-/// Graph page
-///  Build a list of tuples [(very first start date, profit), ..., (very last start date, proft)]
-///  $/hour
-///  $/session
-///  total profit
-///  total time played
-/// Game Page
-///  Can edit or remove game from history
+/// DONE: Move "Report" down
 ///
 
 class PriceData {
@@ -23,6 +16,8 @@ class PriceData {
   int? profit;
   PriceData(this.ts, this.profit);
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -34,8 +29,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List _games = AppUser.getGames();
   List<PriceData> _priceData = [];
+  late TrackballBehavior trackball;
 
-  _MyHomePageState(){initState();}
+  // _MyHomePageState(){initState();}
 
   String timeDifference(String startTime, String endTime) {
     var startTime_ = Constants.dateFormat.parse(startTime);
@@ -59,8 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 MaterialPageRoute(builder: (context) => GamePage(m)),
               );
             },
-            title: Constants.text(m['startTime'], color: Colors.white, fontSize: 16),
-            subtitle: Constants.text(timeDifference(m['startTime'], m['endTime']).toString(), color: Colors.white, fontSize: 12),
+            title: Constants.text(m['location'] + ' - ' + m['startTime'], color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            subtitle: Constants.text(m['gameType'] + ' ' + timeDifference(m['startTime'], m['endTime']).toString(), color: Colors.white, fontSize: 12),
             contentPadding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
             trailing: int.parse(m['cashedOut']) > int.parse(m['buyin']) ?
             Constants.text("+\$" + (int.parse(m['cashedOut']) - int.parse(m['buyin'])).toString() + ".00",
@@ -75,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     }
+    widgets.add(const SizedBox(height: 30));
     return widgets;
   }
 
@@ -88,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Constants.dateFormat.parse(b['startTime'])));
       int totalProfit = 0;
       for (Map m in _games) {
+        print(m);
         int profit = int.parse(m['cashedOut']) - int.parse(m['buyin']);
         DateTime startTime = Constants.dateFormat.parse(m['startTime']);
         priceData.add(PriceData(startTime, totalProfit + profit));
@@ -134,6 +132,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     _priceData = getPriceData();
     AppUser.init();
+    trackball = TrackballBehavior(
+        enable: true,
+        lineType: TrackballLineType.vertical,
+        activationMode: ActivationMode.singleTap,
+        tooltipAlignment: ChartAlignment.center,
+        tooltipDisplayMode: TrackballDisplayMode.nearestPoint,
+        tooltipSettings: InteractiveTooltip(format: 'point.x: point.y'),
+        shouldAlwaysShow: false,
+        hideDelay: 1200,
+    );
     super.initState();
   }
 
@@ -147,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)
@@ -155,12 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
              Align(
                   alignment: Alignment.centerLeft,
-                  child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 20, fontWeight: FontWeight.bold)
+                  child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)
                 ),
               const SizedBox(height: 5,),
               Align(
                   alignment: Alignment.centerLeft,
-                  child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 15, fontWeight: FontWeight.bold),
+                  child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               // Align(
@@ -191,7 +199,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         dataSource: _priceData,
                         xValueMapper: (PriceData price, _) => price.ts,
                         yValueMapper: (PriceData price, _) => price.profit)
-                  ]
+                  ],
+                trackballBehavior: trackball,
               ),
               const SizedBox(height: 5),
               Row(
