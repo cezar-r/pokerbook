@@ -114,7 +114,7 @@ class _NewReport extends State<NewReport> {
             return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: MediaQuery
                         .of(context)
                         .copyWith()
@@ -335,7 +335,7 @@ class _NewReport extends State<NewReport> {
                       Map newGame = {'buyin': buyinText.text != '' ? buyinText.text : game['buyin'],
                         'cashedOut': cashedOutText.text != '' ? cashedOutText.text : game['cashedOut'],
                         'location' : locationText.text != '' ? locationText.text : game['location'],
-                        'gameType' : _selectedGameType != null ? _selectedGameType : game['gameType'],
+                        'gameType' : _selectedGameType ?? game['gameType'],
                         'startTime': _startTime != null ? Constants.dateFormat.format(_startTime!) : game['startTime'],
                         'endTime': _endTime != null ? Constants.dateFormat.format(_endTime!) : game['endTime']
                       };

@@ -85,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
               Constants.dateFormat.parse(b['startTime'])));
       int totalProfit = 0;
       for (Map m in _games) {
-        print(m);
         int profit = int.parse(m['cashedOut']) - int.parse(m['buyin']);
         DateTime startTime = Constants.dateFormat.parse(m['startTime']);
         priceData.add(PriceData(startTime, totalProfit + profit));

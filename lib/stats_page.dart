@@ -26,7 +26,7 @@ class UserNotableStats {
   List<PriceData> getPriceData() {
     List<PriceData> priceData = [];
     for (Map m in _data) {
-      int profit = int.parse(m['cashout']) - int.parse(m['buyin']);
+      int profit = int.parse(m['cashedOut']) - int.parse(m['buyin']);
       DateTime startTime = m['startTime'];
       priceData.add(PriceData(startTime, profit));
     }
