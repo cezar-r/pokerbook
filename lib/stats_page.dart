@@ -182,7 +182,9 @@ class LocationsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             row,
-            locationInfo,
+            Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: locationInfo),
             SizedBox(height: 20,)
           ].map(
                 (e) => Padding(
@@ -211,11 +213,6 @@ class LocationsPage extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
 
 
 class GameTypesPage extends StatelessWidget {
@@ -282,11 +279,13 @@ class GameTypesPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             row,
-            locationInfo,
+            Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: locationInfo),
             SizedBox(height: 20,)
           ].map(
                 (e) => Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
               child: e,
             ),
           ).toList(),
