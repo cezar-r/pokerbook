@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poker_book/new_report_page.dart';
+import 'package:poker_book/stats_page.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'app_user.dart';
@@ -7,9 +9,9 @@ import 'constants.dart';
 import 'game_page.dart';
 
 /// TODO
-/// Figure out navbar
-/// DONE: Move "Report" down
-///
+/// move start and end time to button
+/// figure out graph display
+/// add date range to graph
 
 class PriceData {
   DateTime ts;
@@ -30,6 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final List _games = AppUser.getGames();
   List<PriceData> _priceData = [];
   late TrackballBehavior trackball;
+  final RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+  late String reportProfit;
+  late String reportHourly;
+  late TooltipBehavior _tooltipBehavior;
 
   // _MyHomePageState(){initState();}
 
@@ -55,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 MaterialPageRoute(builder: (context) => GamePage(m)),
               );
             },
-            title: Constants.text(m['location'] + ' - ' + m['startTime'], color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            title: Constants.text(m['location'] + ' - ' + m['startTime'].substring(0, m['startTime'].length - 5), color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
             subtitle: Constants.text(m['gameType'] + ' ' + timeDifference(m['startTime'], m['endTime']).toString(), color: Colors.white, fontSize: 12),
             contentPadding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
             trailing: int.parse(m['cashedOut']) > int.parse(m['buyin']) ?
@@ -127,109 +134,175 @@ class _MyHomePageState extends State<MyHomePage> {
     return getProfit() / (getTotalTime() / 60);
   }
 
+
   @override
   void initState() {
     _priceData = getPriceData();
     AppUser.init();
     trackball = TrackballBehavior(
-        enable: true,
-        lineType: TrackballLineType.vertical,
-        activationMode: ActivationMode.singleTap,
-        tooltipAlignment: ChartAlignment.center,
-        tooltipDisplayMode: TrackballDisplayMode.nearestPoint,
-        tooltipSettings: InteractiveTooltip(format: 'point.x: point.y'),
-        shouldAlwaysShow: false,
-        hideDelay: 1200,
+      enable: true,
+      lineType: TrackballLineType.vertical,
+      activationMode: ActivationMode.singleTap,
+      tooltipAlignment: ChartAlignment.center,
+      tooltipDisplayMode: TrackballDisplayMode.nearestPoint,
+      tooltipSettings: InteractiveTooltip(enable: true, format: 'point.x: \$point.y', color: Colors.black, borderColor: Colors.black),
+      hideDelay: 100,
     );
+    _tooltipBehavior = TooltipBehavior(enable: true);
+    reportProfit = "\$" + getProfit().toString();
+    reportHourly = "\$${getHourly().toStringAsFixed(2)}/hour";
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+
+
+    AppUser.init();
+    reportProfit = "\$" + getProfit().toString();
+    reportHourly = "\$${getHourly().toStringAsFixed(2)}/hour";
+    trackball = TrackballBehavior(
+      enable: true,
+      lineType: TrackballLineType.vertical,
+      activationMode: ActivationMode.singleTap,
+      tooltipAlignment: ChartAlignment.center,
+      tooltipDisplayMode: TrackballDisplayMode.nearestPoint,
+      tooltipSettings: InteractiveTooltip(enable: true, format: 'point.x: \$point.y', color: Colors.black, borderColor: Colors.black),
+      hideDelay: 100,
+    );
+    _tooltipBehavior = TooltipBehavior(enable: true);
     return Scaffold(
       // appBar: Constants.appBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 50, 10, 0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)
-                ),
-              ),
-             Align(
-                  alignment: Alignment.centerLeft,
-                  child: Constants.text("\$${getProfit()}", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)
-                ),
-              const SizedBox(height: 5,),
-              Align(
-                  alignment: Alignment.centerLeft,
-                  child: Constants.text("\$${getHourly().toStringAsFixed(2)}/hour", color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              // Align(
-              //   alignment: Alignment.centerLeft,
-              //   child: Constants.text("${(getWinsRatio() * 100).toStringAsFixed(2)}% win-rate", color: getWinsRatio() >= 0.5 ? Colors.greenAccent : Colors.redAccent, fontSize: 14, fontWeight: FontWeight.bold),
-              // ),
-              SfCartesianChart(
-                enableAxisAnimation: false,
-                  backgroundColor: Colors.black,
-                  plotAreaBorderColor: Colors.black,
-                  plotAreaBackgroundColor: Colors.black,
-                  primaryXAxis: DateTimeAxis(
-                    intervalType: DateTimeIntervalType.days,
-                    majorGridLines: MajorGridLines(width: 0),
+      body : SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 50, 10, 0),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 10),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)
                   ),
-                  primaryYAxis: NumericAxis(
-                    majorTickLines: MajorTickLines(
-                      width: 0,
-                    ),
-                    majorGridLines: MajorGridLines(width: 0),
-                    axisLine: AxisLine(width: 0),
-                    // isVisible: false,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.black),
                   ),
-                  series: <ChartSeries<PriceData, DateTime>>[
-                    LineSeries<PriceData, DateTime>(
-                        // color: Colors.blue,
-                      color: getProfit() > 0 ? Colors.greenAccent : Colors.redAccent,
-                        dataSource: _priceData,
-                        xValueMapper: (PriceData price, _) => price.ts,
-                        yValueMapper: (PriceData price, _) => price.profit)
-                  ],
-                trackballBehavior: trackball,
-              ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  Constants.text("Games", color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
-                  const Spacer(),
-                  ElevatedButton(
-                    child: Icon(
-                      Icons.add,
-                      color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent,
-                    ),
-                    onPressed: (){
+                    onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) =>  const NewReport("home", {})),
+                        MaterialPageRoute(builder: (context) => StatsPage()),
                       );
                     },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.black),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Constants.text(reportProfit, color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)
+                        ),
+                        const SizedBox(height: 5,),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Constants.text(reportHourly, color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        // Align(
+                        //   alignment: Alignment.centerLeft,
+                        //   child: Constants.text("${(getWinsRatio() * 100).toStringAsFixed(2)}% win-rate", color: getWinsRatio() >= 0.5 ? Colors.greenAccent : Colors.redAccent, fontSize: 14, fontWeight: FontWeight.bold),
+                        // ),
+                      ],
+                    )
+                ),
+               //  Padding(
+               //    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+               //    child: Align(
+               //        alignment: Alignment.centerLeft,
+               //        child: Constants.text("Report", color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)
+               //    ),
+               //  ),
+               // Align(
+               //      alignment: Alignment.centerLeft,
+               //      child: Constants.text(reportProfit, color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)
+               //    ),
+               //  const SizedBox(height: 5,),
+               //  Align(
+               //      alignment: Alignment.centerLeft,
+               //      child: Constants.text(reportHourly, color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+               //  ),
+               //  const SizedBox(height: 10),
+               //  // Align(
+               //  //   alignment: Alignment.centerLeft,
+               //  //   child: Constants.text("${(getWinsRatio() * 100).toStringAsFixed(2)}% win-rate", color: getWinsRatio() >= 0.5 ? Colors.greenAccent : Colors.redAccent, fontSize: 14, fontWeight: FontWeight.bold),
+               //  // ),
+                SfCartesianChart(
+                  // onTrackballPositionChanging: (args) {
+                  //   reportProfit = "\$" + args.chartPointInfo.chartDataPoint.yValue.toStringAsFixed(2);
+                  //   reportHourly = '';
+                  //   setState(() {
+                  //
+                  //   });
+                  // },
+                  enableAxisAnimation: false,
+                    backgroundColor: Colors.black,
+                    plotAreaBorderColor: Colors.black,
+                    plotAreaBackgroundColor: Colors.black,
+                    primaryXAxis: DateTimeAxis(
+                      intervalType: DateTimeIntervalType.days,
+                      majorGridLines: MajorGridLines(width: 0),
                     ),
-                  )
-                ],
-              ),
-              Column(
-                children: gameList()
-              )
-            ],
+                    primaryYAxis: NumericAxis(
+                      majorTickLines: MajorTickLines(
+                        width: 0,
+                      ),
+                      majorGridLines: MajorGridLines(width: 0),
+                      axisLine: AxisLine(width: 0),
+                      // isVisible: false,
+                    ),
+                    series: <ChartSeries<PriceData, DateTime>>[
+                      LineSeries<PriceData, DateTime>(
+                          // color: Colors.blue,
+                        color: getProfit() > 0 ? Colors.greenAccent : Colors.redAccent,
+                          dataSource: _priceData,
+                          xValueMapper: (PriceData price, _) => price.ts,
+                          yValueMapper: (PriceData price, _) => price.profit)
+                    ],
+                  trackballBehavior: trackball,
+                  tooltipBehavior: _tooltipBehavior,
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Constants.text("Games", color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+                    const Spacer(),
+                    ElevatedButton(
+                      child: Icon(
+                        Icons.add,
+                        color: getHourly() > 0 ? Colors.greenAccent : Colors.redAccent,
+                      ),
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>  const NewReport("home", {})),
+                        );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.black),
+                      ),
+                    )
+                  ],
+                ),
+                Column(
+                  children: gameList()
+                )
+              ],
+            ),
           ),
         ),
-      ),
+
       backgroundColor: Colors.black,
     );
   }
