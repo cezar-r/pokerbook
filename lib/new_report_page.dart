@@ -39,7 +39,6 @@ class NewSession {
 NewSession newSession = NewSession();
 
 class NewReport extends StatefulWidget {
-  // const NewReport({Key? key}) : super(key: key);
   final String prevPage;
   final Map game;
   const NewReport(this.prevPage, this.game, {Key? key}) : super(key : key);
