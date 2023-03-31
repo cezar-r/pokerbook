@@ -1,6 +1,6 @@
 # Poker Bookie Mobile App
 
-- This is an app that can be used by poker players to keep track of their winnings over time. This app provides a friendly user interface that makes it easy for users to upload new games and view their stats in a meaningful way. We do this by providing a graph of the players earnings over time, as well as providing insights such as winrate per hour, win/loss percentage, and total time played. We also shows these stats divided into locations and stakes.
+- This is an app that can be used by poker players to keep track of their winnings over time. This app provides a friendly user interface that makes it easy for users to upload new games and view their stats in a meaningful way. This is done by providing a graph of the players earnings over time, as well as providing insights such as winrate per hour, win/loss percentage, and total time played. We also shows these stats divided into locations and stakes.
 
 - Below are some screenshots of the app and how it can be used.
 
@@ -28,4 +28,4 @@
 </p>
 
 ## TODO
-- The main functionailty I plan on adding is allowing users to find poker games in nearby casinos on this app.
+- The main functionailty I plan on adding is allowing users to find poker games in nearby casinos.
